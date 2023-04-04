@@ -12,3 +12,6 @@
 
 # Ignore debug files
 *.out
+
+# Ignore txt files
+*.txt
