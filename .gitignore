@@ -15,3 +15,5 @@
 
 # Ignore txt files
 *.txt
+
+!makefile
