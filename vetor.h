@@ -1,10 +1,7 @@
-#ifndef OPERATIONS_H
-#define OPERATIONS_H
-
+#ifndef VETOR_H
+#define VETOR_H
 
 int calculaM(char* buffer);
-
-FILE* abreArquivoEntrada(char* nomeArquivoEntrada);
 
 void liberaVetorPontos(char** pontos, int nPontos);
 

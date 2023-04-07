@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include "euclidian_distance.h"
-#include "operations.h"
+#include "vetor.h"
 
 #define SUCCESS 0
 #define ERROR -1
@@ -22,7 +22,11 @@ int main(int argc, char* argv[]) {
     int k = atoi(argv[2]);
 
     // Abre o arquivo de entrada
-    FILE* arquivoEntrada = abreArquivoEntrada(nomeArquivoEntrada);
+    FILE* arquivoEntrada = fopen(nomeArquivoEntrada, "r");
+    if (arquivoEntrada == NULL) {
+        printf("Erro ao abrir o arquivo de entrada!\n");
+        return ERROR;
+    }
 
     // Declara o buffer que armazena as linhas do arquivo de entrada
     size_t bufferSize = 64;
@@ -47,16 +51,51 @@ int main(int argc, char* argv[]) {
     // Coleta as linhas do arquivo de entrada e preenche em um vetor de strings
     char** pontos = preencheVetorLinhas(buffer, &bufferSize, arquivoEntrada, &nPontos, &v_max);
 
-    // Imprime o vetor com as IDs dos pontos
-    for (int i = 0; i < nPontos; i++) {
-        printf("%s\n", pontos[i]); // ta imprimindo certinho
+    // Fecha o arquivo de entrada
+    fclose(arquivoEntrada);
+    
+    long double matrizDistancias[nPontos-1][nPontos-1];
+    for (int i = 0; i < nPontos-1; i++)
+    {
+        for (int j = 0; j < nPontos-1; j++)
+        {
+            matrizDistancias[i][j] = 0;
+        }
     }
     
+    long double vet1[m];
+    long double vet2[m];
+    
+    char* pt;
+    int cont = 0;
+    char temp[1000];
+    for (int i = 0; i < nPontos-1; i++) {
+        strcpy(temp, pontos[i]);
+        pt = strtok(temp,",");
+        pt = strtok(NULL,","); // pula o primeiro token
+        while (pt) {
+            vet1[cont] = strtold(pt, NULL);
+            cont++;
+            pt = strtok(NULL,",");
+        }
+        cont = 0;
+        for (int j = i+1; j < nPontos-1; j++) {
+            strcpy(temp, pontos[j]);
+            pt = strtok(temp,",");
+            pt = strtok(NULL,",");
+            while (pt) {
+                vet2[cont] = strtold(pt, NULL);
+                cont++;
+                pt = strtok(NULL,",");
+            }
+            cont = 0;
+            matrizDistancias[i][j] = euclidian_distance(vet1, vet2, m);
+        }
+    }
+
     // Libera o vetor de pontos
     liberaVetorPontos(pontos, nPontos);
 
-    // Fecha o arquivo de entrada
-    fclose(arquivoEntrada);
 
     return SUCCESS;
 }

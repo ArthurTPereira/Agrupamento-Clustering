@@ -2,36 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "operations.h"
+#include "vetor.h"
 
 #define ERROR -1
-
-// Calcula a dimensao M dos pontos
-// Entrada: buffer - string que contem a primeira linha do arquivo de entrada
-// Saida: m - dimensao M dos pontos
-int calculaM(char* buffer) {
-
-    char* pt = strtok(buffer,",");
-    int m = -1;
-    while (pt) {
-        m++;
-        pt = strtok(NULL,",");
-    }
-
-    return m;
-}
 
 // Abre o arquivo de entrada
 // Entrada: nomeArquivoEntrada - nome do arquivo de entrada
 // Saida: arquivoEntrada - ponteiro para o arquivo de entrada
-FILE* abreArquivoEntrada(char* nomeArquivoEntrada) {
-    FILE* arquivoEntrada = fopen(nomeArquivoEntrada, "r");
-    if (arquivoEntrada == NULL) {
-        printf("Erro ao abrir o arquivo de entrada!\n");
-        exit(ERROR);
-    }
-    return arquivoEntrada;
-}
+
 
 // Libera a memoria alocada para o vetor de pontos
 // Entrada: pontos - vetor de pontos
@@ -44,6 +22,13 @@ void liberaVetorPontos(char** pontos, int nPontos) {
     free(pontos);
 }
 
+// Preenche o vetor de pontos com as linhas do arquivo de entrada
+// Entrada: buffer - variavel do ponteiro da string
+//          bufferSize - tamanho do buffer
+//          arquivoEntrada - ponteiro para o arquivo de entrada
+//          nPontos - numero de pontos
+//          v_max - tamanho maximo do vetor de pontos
+// Saida:   vetor de pontos
 char** preencheVetorLinhas(char* buffer, size_t* bufferSize, FILE* arquivoEntrada, int* nPontos, int* v_max) {
     char** pontos = (char**) malloc(sizeof(char*));
     char* temp;
@@ -61,4 +46,19 @@ char** preencheVetorLinhas(char* buffer, size_t* bufferSize, FILE* arquivoEntrad
     }
     free(buffer);
     return pontos;
+}
+
+// Calcula a dimensao M dos pontos
+// Entrada: buffer - string que contem a primeira linha do arquivo de entrada
+// Saida: m - dimensao M dos pontos
+int calculaM(char* buffer) {
+
+    char* pt = strtok(buffer,",");
+    int m = -1;
+    while (pt) {
+        m++;
+        pt = strtok(NULL,",");
+    }
+
+    return m;
 }
