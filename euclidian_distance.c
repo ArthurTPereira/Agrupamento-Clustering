@@ -17,5 +17,5 @@ double euclidian_distance(double* pontoA, double* pontoB, int v_size) {
     }
     
     // Retorna a raiz quadrada da soma
-    return sqrtl(soma);
+    return sqrt(soma);
 }

@@ -8,8 +8,8 @@
 
 struct distancias {
     double distancia;
-    int linha;
-    int coluna;
+    int origem;
+    int destino;
 };
 
 // Libera a memoria alocada para o vetor de pontos
@@ -79,8 +79,8 @@ int calculaM(char* buffer) {
 //          -1 se a < b
 //          0 se a = b
 int comparaDistancia(const void* a, const void* b) {
-    VetorDistancia** x = (VetorDistancia**) a;
-    VetorDistancia** y = (VetorDistancia**) b;
+    Ponto** x = (Ponto**) a;
+    Ponto** y = (Ponto**) b;
     if ((*x)->distancia > (*y)->distancia) {
         return 1;
     } else if ((*x)->distancia < (*y)->distancia) {
@@ -93,16 +93,16 @@ int comparaDistancia(const void* a, const void* b) {
 // Aloca o vetor de distancias
 // Entrada: n - numero de pontos
 // Saida:   vetor de distancias
-VetorDistancia** alocaVetorDistancia(int n) {
-    VetorDistancia** vetorDistancias = (VetorDistancia**) malloc(n * sizeof(VetorDistancia*));
+Ponto** alocaVetorDistancia(int n) {
+    Ponto** vetorDistancias = (Ponto**) malloc(n * sizeof(Ponto*));
     if (vetorDistancias == NULL) {
-        printf("Erro ao alocar memoria para o vetor de distancias");
+        printf("Erro ao alocar memoria para o vetor de distancias 01\n");
         exit(ERROR);
     }
     for (int i = 0; i < n; i++) {
-        vetorDistancias[i] = (VetorDistancia*) malloc(n * sizeof(VetorDistancia));
+        vetorDistancias[i] = (Ponto*) malloc(sizeof(Ponto));
         if (vetorDistancias[i] == NULL) {
-            printf("Erro ao alocar memoria para o vetor de distancias");
+            printf("Erro ao alocar memoria para o vetor de distancias\n");
             exit(ERROR);
         }
     }
@@ -113,24 +113,24 @@ VetorDistancia** alocaVetorDistancia(int n) {
 // Entrada: vetorDistancias - vetor de distancias
 //          n - numero de pontos
 // Saida: void
-void liberaVetorDistancia(VetorDistancia** vetorDistancias, int n) {
+void liberaVetorDistancia(Ponto** vetorDistancias, int n) {
     for (int i = 0; i < n; i++) {
         free(vetorDistancias[i]);
     }
     free(vetorDistancias);
 }
 
-// Atribui os valores da distancia, linha e coluna para o vetor de distancias
+// Atribui os valores da distancia, origem e coluna para o vetor de distancias
 // Entrada: vetorDistancias - vetor de distancias
 //          posicao - posicao do vetor de distancias
-//          linha - valor da linha
+//          origem - valor da origem
 //          coluna - valor da coluna
-//          distancia - valor da distancia entre os pontos da linha e coluna
+//          distancia - valor da distancia entre os pontos da origem e coluna
 // Saida: void
-void atribuiDistancia(VetorDistancia** vetorDistancias, int posicao, int linha, int coluna, double distancia) {
+void atribuiDistancia(Ponto** vetorDistancias, int posicao, int origem, int coluna, double distancia) {
     vetorDistancias[posicao]->distancia = distancia;
-    vetorDistancias[posicao]->linha = linha;
-    vetorDistancias[posicao]->coluna = coluna;
+    vetorDistancias[posicao]->origem = origem;
+    vetorDistancias[posicao]->destino = coluna;
 }
 
 // Aloca o vetor de nomes
@@ -150,4 +150,16 @@ void liberaVetorNomes(char** nomes, int n) {
         free(nomes[i]);
     }
     free(nomes);
+}
+
+double getDistancia(Ponto* ponto) {
+    return ponto->distancia;
+}
+
+int getOrigem(Ponto* ponto) {
+    return ponto->origem;
+}
+
+int getDestino(Ponto* ponto) {
+    return ponto->destino;
 }
