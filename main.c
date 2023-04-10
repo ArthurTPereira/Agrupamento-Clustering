@@ -8,6 +8,12 @@
 #define SUCCESS 0
 #define ERROR -1
 
+struct distancias { // isso aqui vai ficar temporario eu acho
+    double distancia;
+    int linha;
+    int coluna;
+};
+
 int main(int argc, char* argv[]) {
 
     // Verifica se o numero de argumentos eh valido
@@ -53,26 +59,33 @@ int main(int argc, char* argv[]) {
 
     // Fecha o arquivo de entrada
     fclose(arquivoEntrada);
+
+    int n = nPontos-1;
+    int tamanho = (n)*(n-1)/2;
+
+    // vetor de distancia
+    VetorDistancia** distancias = alocaVetorDistancia(tamanho);
+
+    double vet1[m];
+    double vet2[m];
+
+    char** nomesPontos = (char**) malloc((nPontos-1) * sizeof(char*));
+
     
-    long double matrizDistancias[nPontos-1][nPontos-1];
-    for (int i = 0; i < nPontos-1; i++)
-    {
-        for (int j = 0; j < nPontos-1; j++)
-        {
-            matrizDistancias[i][j] = 0;
-        }
-    }
-    
-    long double vet1[m];
-    long double vet2[m];
-    
+    int v = 0;
     char* pt;
     int cont = 0;
     char temp[1000];
     for (int i = 0; i < nPontos-1; i++) {
         strcpy(temp, pontos[i]);
         pt = strtok(temp,",");
-        pt = strtok(NULL,","); // pula o primeiro token
+        nomesPontos[i] = (char*) malloc((strlen(pt)+1) * sizeof(char));
+        if (nomesPontos[i] == NULL) {
+            printf("Erro ao alocar memoria para o nome!\n");
+            return ERROR;
+        }
+        strcpy(nomesPontos[i], pt);
+        pt = strtok(NULL,",");
         while (pt) {
             vet1[cont] = strtold(pt, NULL);
             cont++;
@@ -84,17 +97,36 @@ int main(int argc, char* argv[]) {
             pt = strtok(temp,",");
             pt = strtok(NULL,",");
             while (pt) {
-                vet2[cont] = strtold(pt, NULL);
+                vet2[cont] = strtod(pt, NULL);
                 cont++;
                 pt = strtok(NULL,",");
             }
             cont = 0;
-            matrizDistancias[i][j] = euclidian_distance(vet1, vet2, m);
+            atribuiDistancia(distancias,v,i,j,euclidian_distance(vet1, vet2, m));
+            v++;
         }
     }
 
-    // Libera o vetor de pontos
+    // ordena o vetor de distancia
+    qsort(distancias, tamanho, sizeof(VetorDistancia*), comparaDistancia);
+
+    // Abre o arquivo de saida
+    FILE* arquivoSaida = fopen(nomeArquivoSaida, "w");
+    if (arquivoSaida == NULL) {
+        printf("Erro ao abrir o arquivo de saida!\n");
+        return ERROR;
+    }
+
+    for (int i = 0; i < tamanho; i++) {
+        fprintf(arquivoSaida, "%.15f\n", distancias[i]->distancia);
+    }
+
+    fclose(arquivoSaida);
+
+    // Libera os vetores
     liberaVetorPontos(pontos, nPontos);
+    liberaVetorDistancia(distancias, tamanho);
+    liberaVetorNomes(nomesPontos, nPontos-1);
 
 
     return SUCCESS;

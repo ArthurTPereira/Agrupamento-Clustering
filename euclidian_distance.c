@@ -9,8 +9,8 @@
 * v_size: tamanho dos vetores pontoA e pontoB
 * return: distancia euclidiana entre os pontos A e B
 */
-long double euclidian_distance(long double* pontoA, long double* pontoB, int v_size) {
-    long double soma = 0;
+double euclidian_distance(double* pontoA, double* pontoB, int v_size) {
+    double soma = 0;
     // Calcula a soma dos quadrados das diferenças entre as coordenadas
     for (int i = 0; i < v_size; i++) {
         soma += pow(pontoA[i] - pontoB[i], 2);
