@@ -16,7 +16,7 @@ struct raiz {
 };
 
 int find(int* vetor, int i);
-void Union(int* vetor, int a, int b, int tamanho);
+void Union(int* vetor, int a, int b);
 
 void kruskalAlgorithm(Ponto** pontos, int tamanhoVetor, int k, int nPontos) {
 
@@ -31,25 +31,26 @@ void kruskalAlgorithm(Ponto** pontos, int tamanhoVetor, int k, int nPontos) {
 
     int a = 0;
     int b = 0;
-    int temp;
+    int count = 0;
     for (int i = 0; i < tamanhoVetor; i++) {
-        a = find(vetor, pontos[i]->origem);
+        if (count == nPontos - 1 - (k -1)) {
+            break;
+        }
+
+        a = find(vetor, getOrigem(pontos[i]));
         b = find(vetor, getDestino(pontos[i]));
 
         if (a != b) {
-            Union(vetor, a, b, nPontos);
+            mst->pontos[i] = pontos[i];
+            Union(vetor, a, b);
+            count++;
         }
-    }
-
-    for (int i = 0; i < mst->nPontos; i++) {
-        printf("%d %d %lf\n", getOrigem(mst->pontos[i]), getDestino(mst->pontos[i]), getDistancia(mst->pontos[i]));
     }
 
     for (int i = 0; i < nPontos; i++)
     {
         printf("%d ", vetor[i]);
     }
-    
     
     free(vetor);
     free(mst->pontos);
@@ -58,14 +59,15 @@ void kruskalAlgorithm(Ponto** pontos, int tamanhoVetor, int k, int nPontos) {
 }
 
 int find(int* vetor, int i) {
-    if ( vetor[i] == i) {
-        return i;
+    while (i != vetor[i]) {
+        i = vetor[i];
     }
-    return find(vetor, vetor[i]);
+    return i;
 }
 
-void Union(int* vetor, int a, int b, int tamanho) {
+void Union(int* vetor, int a, int b) {
     int idA = find(vetor, a);
     int idB = find(vetor, b);
+    
     vetor[idA] = idB;
 }
