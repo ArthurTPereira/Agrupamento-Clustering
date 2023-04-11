@@ -3,10 +3,12 @@
 
 #include "vetor.h"
 
-typedef struct raiz Arvore;
+int* kruskalAlgorithm(Ponto** pontos, int tamanhoVetor, int k, int nPontos);
 
-void kruskalAlgorithm(Ponto** pontos, int tamanhoVetor, int k, int nPontos);
+int find(int* vetor, int i);
 
+void w_QuickUnion(int* vetor, int* vetorSize, int a, int b);
 
+void liberaVetorArvore(int* vetor);
 
 #endif

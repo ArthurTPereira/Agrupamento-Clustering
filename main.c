@@ -5,23 +5,15 @@
 #include "euclidian_distance.h"
 #include "vetor.h"
 #include "kruskal.h"
+#include "file.h"
 
 #define SUCCESS 0
 #define ERROR -1
 
-struct distancias { // isso aqui vai ficar temporario eu acho
-    double distancia;
-    int origem;
-    int destino;
-};
-
 int main(int argc, char* argv[]) {
 
-    // Verifica se o numero de argumentos eh valido
-    if (argc != 4) {
-        printf("Numero de argumentos invalido!\n");
-        return ERROR;
-    } 
+    // Verifica se os argumentos sao validos
+    verificaArgumentos(argc, argv);
 
     // Declara as variaveis que armazenam os argumentos
     char* nomeArquivoEntrada = argv[1];
@@ -29,11 +21,7 @@ int main(int argc, char* argv[]) {
     int k = atoi(argv[2]);
 
     // Abre o arquivo de entrada
-    FILE* arquivoEntrada = fopen(nomeArquivoEntrada, "r");
-    if (arquivoEntrada == NULL) {
-        printf("Erro ao abrir o arquivo de entrada!\n");
-        return ERROR;
-    }
+    FILE* arquivoEntrada = abreArquivoEntrada(nomeArquivoEntrada);
 
     // Declara o buffer que armazena as linhas do arquivo de entrada
     size_t bufferSize = 64;
@@ -71,17 +59,16 @@ int main(int argc, char* argv[]) {
     double vet2[m];
 
     // Vetor com os nomes dos pontos
-    char** nomesPontos = (char**) malloc((nPontos) * sizeof(char*));
-    if (nomesPontos == NULL) {
-        printf("Erro ao alocar memoria para o vetor de nomes!\n");
-        return ERROR;
-    }
+    char** nomesPontos = alocaVetorNomes(nPontos);
 
     int v = 0;
     char* pt;
     int cont = 0;
     char temp[1000];
+
+    // preenche o vetor de distancias
     for (int i = 0; i < nPontos; i++) {
+        // coleta o nome do ponto e insere no vetor de nomes
         strcpy(temp, pontos[i]);
         pt = strtok(temp,",");
         nomesPontos[i] = (char*) malloc((strlen(pt)+1) * sizeof(char));
@@ -91,59 +78,62 @@ int main(int argc, char* argv[]) {
         }
         strcpy(nomesPontos[i], pt);
         pt = strtok(NULL,",");
+
+        // coleta as coordenadas do ponto e insere em um vetor
         while (pt) {
             vet1[cont] = strtold(pt, NULL);
             cont++;
             pt = strtok(NULL,",");
         }
         cont = 0;
+
+        // para cada ponto seguinte, calcula a distancia euclidiana e insere no vetor de distancias
         for (int j = i+1; j < nPontos; j++) {
             strcpy(temp, pontos[j]);
             pt = strtok(temp,",");
-            pt = strtok(NULL,",");
+            pt = strtok(NULL,","); // ignora o nome do ponto
+
+            // coleta as coordenadas do ponto e insere em outro vetor
             while (pt) {
                 vet2[cont] = strtod(pt, NULL);
                 cont++;
                 pt = strtok(NULL,",");
             }
             cont = 0;
+
+            // utiliza os vetores com as coordenadas para calcular a distancia euclidiana e insere no vetor de distancias
             atribuiDistancia(distancias,v,i,j,euclidian_distance(vet1, vet2, m));
             v++;
         }
     }
 
+    // libera o vetor de pontos inicial que nao sera mais utilizado
+    liberaVetorPontos(pontos, nPontos);
+
     // ordena o vetor de distancia
     qsort(distancias, tamanho, sizeof(Ponto*), comparaDistancia);
 
     // Abre o arquivo de saida
-    FILE* arquivoSaida = fopen(nomeArquivoSaida, "w");
-    if (arquivoSaida == NULL) {
-        printf("Erro ao abrir o arquivo de saida!\n");
-        return ERROR;
-    }
+    FILE* arquivoSaida = abreArquivoSaida(nomeArquivoSaida);
 
     for (int i = 0; i < tamanho; i++) {
-        fprintf(arquivoSaida, "%i,%i - %.15f\n", distancias[i]->origem, distancias[i]->destino, distancias[i]->distancia);
-        printf("%i,%i - %.15f\n", distancias[i]->origem, distancias[i]->destino, distancias[i]->distancia);
-        
+        fprintf(arquivoSaida, "%i,%i - %.15f\n", getOrigem(distancias[i]), getDestino(distancias[i]), getDistancia(distancias[i]));
     }
 
+    // fecha o arquivo de saida
     fclose(arquivoSaida);
 
+    // executa o algoritmo de kruskal e obtem a mst
+    int* vetorArvore = kruskalAlgorithm(distancias,tamanho, k, nPontos);
 
-    printf("\n\n\ntamanho: %i, k = %i\n", tamanho, k);
+    for (int i = 0; i < nPontos; i++) {
+        printf("%i ", vetorArvore[i]);
+    }
 
-    kruskalAlgorithm(distancias,tamanho, k, nPontos);
-
-
-
-
-
-    // Libera os vetores
-    liberaVetorPontos(pontos, nPontos);
+    // Libera os vetores alocados
     liberaVetorDistancia(distancias, tamanho);
     liberaVetorNomes(nomesPontos, nPontos);
-
+    liberaVetorArvore(vetorArvore);
 
     return SUCCESS;
 }

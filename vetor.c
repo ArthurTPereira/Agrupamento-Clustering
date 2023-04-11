@@ -6,6 +6,7 @@
 
 #define ERROR -1
 
+// Estrutura com o tamanho da aresta, o ponto de origem e o ponto de destino
 struct distancias {
     double distancia;
     int origem;
@@ -17,9 +18,13 @@ struct distancias {
 //          nPontos - numero de pontos
 // Saida: void
 void liberaVetorPontos(char** pontos, int nPontos) {
+
+    // libera cada ponto
     for (int i = 0; i < nPontos; i++) {
         free(pontos[i]);
     }
+
+    // libera o vetor
     free(pontos);
 }
 
@@ -31,9 +36,14 @@ void liberaVetorPontos(char** pontos, int nPontos) {
 //          v_max - tamanho maximo do vetor de pontos
 // Saida:   vetor de pontos
 char** preencheVetorLinhas(char* buffer, size_t* bufferSize, FILE* arquivoEntrada, int* nPontos, int* v_max) {
+    
+    // declara o vetor de pontos
     char** pontos = (char**) malloc(sizeof(char*));
     char* temp;
+
+    // le o arquivo linha por linha
     while (getline(&buffer, &(*bufferSize), arquivoEntrada) != -1)  {
+        // Verifica se o vetor de pontos esta cheio
         if ((*nPontos) >= (*v_max)) {
             // Duplica o tamanho do vetor de pontos e realoca
             (*v_max) *= 2;
@@ -62,8 +72,11 @@ char** preencheVetorLinhas(char* buffer, size_t* bufferSize, FILE* arquivoEntrad
 // Saida: m - dimensao M dos pontos
 int calculaM(char* buffer) {
 
+    // separa a linha por virgulas
     char* pt = strtok(buffer,",");
-    int m = -1;
+    int m = -1; // m = -1 para ignorar a primeira coluna (ID)
+
+    // enquanto houver virgulas, incrementa o M
     while (pt) {
         m++;
         pt = strtok(NULL,",");
@@ -94,11 +107,13 @@ int comparaDistancia(const void* a, const void* b) {
 // Entrada: n - numero de pontos
 // Saida:   vetor de distancias
 Ponto** alocaVetorDistancia(int n) {
+    // aloca o vetor
     Ponto** vetorDistancias = (Ponto**) malloc(n * sizeof(Ponto*));
     if (vetorDistancias == NULL) {
         printf("Erro ao alocar memoria para o vetor de distancias 01\n");
         exit(ERROR);
     }
+    // aloca cada distancia do vetor
     for (int i = 0; i < n; i++) {
         vetorDistancias[i] = (Ponto*) malloc(sizeof(Ponto));
         if (vetorDistancias[i] == NULL) {
@@ -114,9 +129,11 @@ Ponto** alocaVetorDistancia(int n) {
 //          n - numero de pontos
 // Saida: void
 void liberaVetorDistancia(Ponto** vetorDistancias, int n) {
+    // libera cada distancia
     for (int i = 0; i < n; i++) {
         free(vetorDistancias[i]);
     }
+    // libera o vetor
     free(vetorDistancias);
 }
 
@@ -145,21 +162,36 @@ char** alocaVetorNomes(int n) {
     return nomes;
 }
 
+// Libera a memoria alocada para o vetor de nomes
+// Entrada: nomes - vetor de nomes
+//          n - qtd de nomes
+// Saida: void
 void liberaVetorNomes(char** nomes, int n) {
+    // libera cada nome
     for (int i = 0; i < n; i++) {
         free(nomes[i]);
     }
+    // libera o vetor 
     free(nomes);
 }
 
+// retorna a distancia entre dois pontos
+// Entrada: ponto que contem a origem, destino e distancia
+// Saida:   distancia entre os pontos
 double getDistancia(Ponto* ponto) {
     return ponto->distancia;
 }
 
+// retorna a origem do ponto
+// Entrada: ponto que contem a origem, destino e distancia
+// Saida:   origem do ponto
 int getOrigem(Ponto* ponto) {
     return ponto->origem;
 }
 
+// retorna o destino do ponto
+// Entrada: ponto que contem a origem, destino e distancia
+// Saida:   destino do ponto
 int getDestino(Ponto* ponto) {
     return ponto->destino;
 }
