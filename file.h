@@ -7,5 +7,7 @@ FILE* abreArquivoEntrada(char* nomeArquivoEntrada);
 
 FILE* abreArquivoSaida(char* nomeArquivoSaida);
 
+void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nomes);
+
 
 #endif
