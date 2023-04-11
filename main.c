@@ -116,30 +116,19 @@ int main(int argc, char* argv[]) {
     // Abre o arquivo de saida
     FILE* arquivoSaida = abreArquivoSaida(nomeArquivoSaida);
 
-    // for (int i = 0; i < tamanho; i++) {
-    //     fprintf(arquivoSaida, "%i,%i - %.15f\n", getOrigem(distancias[i]), getDestino(distancias[i]), getDistancia(distancias[i]));
-    // }
-
-    // fecha o arquivo de saida
-
     // executa o algoritmo de kruskal e obtem a mst
     int* vetorArvore = kruskalAlgorithm(distancias,tamanho, k, nPontos);
 
     // libera o vetor de distancias que nao sera mais utilizado
     liberaVetorDistancia(distancias, tamanho);
 
-    for (int i = 0; i < nPontos; i++) {
-        printf("%i ", vetorArvore[i]);
-    }
-
-    printf("\n\n");
-
+    // Escreve os grupos no arquivo de saida
     escreveGrupos(arquivoSaida, vetorArvore, nPontos, k, nomesPontos);
-
 
     // Libera os vetores alocados
     fclose(arquivoSaida);
     
+    // Libera os vetores
     liberaVetorNomes(nomesPontos, nPontos);
     liberaVetorArvore(vetorArvore);
 

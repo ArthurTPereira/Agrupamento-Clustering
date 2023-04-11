@@ -162,6 +162,8 @@ char** alocaVetorNomes(int n) {
     return nomes;
 }
 
+
+
 // Libera a memoria alocada para o vetor de nomes
 // Entrada: nomes - vetor de nomes
 //          n - qtd de nomes

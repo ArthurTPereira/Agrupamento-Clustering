@@ -6,6 +6,13 @@
 
 #define ERROR -1
 
+
+// Estrutura de um dicionario para facilitar a escrita dos dados no arquivo de saida
+typedef struct dicionario {
+    char* nome;
+    int indice;
+} Dicionario;
+
 // verifica os argumentos de entrada para os arquivos
 // Entrada: argc - numero de argumentos
 //          argv - vetor de argumentos
@@ -48,9 +55,20 @@ FILE* abreArquivoSaida(char* nomeArquivoSaida) {
     return arquivoSaida;
 }
 
-
-int comparaNomes(const void* string1, const void* string2) {
-    int resultado = strcmp(*(char**) string1, *(char**) string2);
+// funcao de comparacao de nomes para o qsort
+// Entrada: a - struct Dicionario
+//          b - struct Dicionario
+// Saida:   -1 se a < b
+//          0 se a = b
+//          1 se a > b
+int comparaNomes(const void* a, const void* b) {
+    Dicionario* x = (Dicionario*) a;
+    Dicionario* y = (Dicionario*) b;
+    char nome1[50];
+    char nome2[50];
+    strcpy(nome1, x->nome);
+    strcpy(nome2, y->nome);
+    int resultado = strcmp(nome1, nome2);
     if (resultado < 0) {
         return -1;
     } else if (resultado > 0) {
@@ -60,84 +78,134 @@ int comparaNomes(const void* string1, const void* string2) {
     }
 }
 
+// funcao de comparacao de grupos para o qsort
+// Entrada: a - struct Dicionario
+//          b - struct Dicionario
+// Saida:   -1 se a < b
+//          0 se a = b
+//          1 se a > b
+int comparaGrupos(const void* a, const void* b) {
+    Dicionario* x = *(Dicionario**) a;
+    Dicionario* y = *(Dicionario**) b;
+    char nome1[50];
+    char nome2[50];
+    strcpy(nome1, x->nome);
+    strcpy(nome2, y->nome);
+    int resultado = strcmp(nome1, nome2);
+    if (resultado < 0) {
+        return -1;
+    } else if (resultado > 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
+// funcao de comparacao de frequencia para o qsort
+// Entrada: a - inteiro
+//          b - inteiro
+// Saida:   -1 se a < b
+//          0 se a = b
+//          1 se a > b
+int comparaFrequencia(const void* a, const void* b) {
+    int x = *(int*) a;
+    int y = *(int*) b;
+    if (x < y) {
+        return -1;
+    } else if (x > y) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+// Escreve os grupos no arquivo de saida
+// Entrada: arquivoSaida - ponteiro para o arquivo de saida
+//          mst - arvore geradora minima com os grupos montados
+//          tamanho - tamanho da arvore geradora minima
+//          k - numero de grupos
+//          nomes - vetor com os nomes dos grupos
 void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nomes) {
     
-    int* freq = (int*) calloc(k,sizeof(int));
-    for (int i = 0; i < tamanho; i++) {
-        freq[mst[i]]++;
-    }
-
-    int d = 0;
-    int diff = 0;
+    // Vetor de grupos que armazena quais grupos distintos
     int* grupos = (int*) malloc(k * sizeof(int));
 
+    // Vetor de frequencia que armazena quantos pontos estao em um grupo
+    int* freq = (int*) calloc(k, sizeof(int));
+
+    int qtdDistintos = 0;
+
+    // Preenche os vetores de grupos e frequencia
     for (int i = 0; i < tamanho; i++) {
-        d = 1;
-        for (int j = 0; j < diff; j++) {
-            if (mst[i] == grupos[j]) {
-                d = 0;
+        int temp = mst[i];
+        int found = 0;
+        // varre cada um dos grupos no vetor
+        for (int j = 0; j < qtdDistintos; j++) {
+            // se encontrar aumenta a frequencia e sai do for
+            if (temp == grupos[j]) {
+                found = 1;
+                freq[j]++;
                 break;
             }
         }
-        
-        if (d == 1) {
-            grupos[diff] = mst[i];
-            diff++;
+        // se ja nao estiver no vetor de grupos, adiciona ele
+        if (!found) {
+            grupos[qtdDistintos] = temp;
+            freq[qtdDistintos] = 1;
+            qtdDistintos++;
         }
     }
 
-    int** agrupamentos = (int**) malloc(k * sizeof(int*));
+    // Matriz com um "dicionario" para relacionar o id do nome com o indice
+    Dicionario** agrupamentos = (Dicionario**) malloc(k * sizeof(Dicionario*));
     for (int i = 0; i < k; i++) {
-        agrupamentos[i] = (int*) malloc(freq[i] * sizeof(int));
+        agrupamentos[i] = (Dicionario*) malloc(freq[i] * sizeof(Dicionario));
     }
 
     int count = 0;
-    for (int i = 0; i < k; i++) {
-        count = 0;
-        for (int j = 0; j < tamanho; j++) {
-            if (mst[j] == grupos[i]) {
-                agrupamentos[i][count] = j;
-                count++;
+
+        // preenche a matriz com os ids e o indice, varrendo cada grupo
+        for (int i = 0; i < k; i++) {
+            count = 0;
+
+            // Varre a mst
+            for (int j = 0; j < tamanho; j++) {
+                // Se o valor na mst atual for igual ao grupo atual, adiciona o nome e o indice
+                if (mst[j] == grupos[i]) {
+                    agrupamentos[i][count].indice = j;
+                    agrupamentos[i][count].nome = nomes[j];
+                    count++;
+                }
             }
         }
+
+    // Ordena cada grupo alfabeticamente
+    for (int i = 0; i < k; i++) {
+        qsort(agrupamentos[i], freq[i], sizeof(Dicionario), comparaNomes);
     }
 
-    for (int i = 0; i < k; i++) {
-        
-    }
+    // Ordena o vetor de frequencia e os grupos
+    qsort(freq, k, sizeof(int), comparaFrequencia);
+    qsort(agrupamentos, k, sizeof(Dicionario*),comparaGrupos);
     
-
-    for (int i = 0; i < k; i++) {
-        for (int j = 0; j < freq[i]; j++) {
-            printf("%s", nomes[agrupamentos[i][j]]);
-            if (j != freq[i] - 1) {
-                printf(",");
+    // Escreve os grupos no arquivo de saida
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < freq[i]; j++) {
+                fprintf(arquivoSaida, "%s", agrupamentos[i][j].nome);
+                
+                if (j != freq[i] - 1) { // atencao para nao colocar virgula no final
+                    fprintf(arquivoSaida,",");
+                }
             }
-        } 
-        printf("\n");
-    }
+            fprintf(arquivoSaida,"\n");
 
-    return;
-    //  for(int i = 0; i < k; i++) {
-    //         int menor = i;
-    //         for(int j = i+1; j < k; j++){
-    //             if(strcmp(nomes[agrupamentos[j][0]], nomes[agrupamentos[menor][0]]) < 0){
-    //                 menor = j;
-    //             }
-    //         }
-    //         if(menor != i){
-    //             int* aux = agrupamentos[i];
-    //             agrupamentos[i] = agrupamentos[menor];
-    //             agrupamentos[menor] = aux;
-    //         }
-    //     }
-    //     for(int i = 0; i < k; i++){
-    //         //qsort(agrupamentos[i], mst[i], sizeof(int*), comparaNomes);
-    //         fprintf(arquivoSaida, "%s\n", nomes[agrupamentos[i][0]]);
-    //         for(int j = 0; j < freq[i]; j++){
-    //             fprintf(arquivoSaida, "%s,", nomes[agrupamentos[i][j]]);
-    //         }
-    //         fprintf(arquivoSaida, "\n");
-    //     }
+        }
+
+    // libera o vetor de frequencia, os grupos e a matriz de agrupamentos
+    free(freq);
+    free(grupos);
+    for (int i = 0; i < k; i++) {
+        free(agrupamentos[i]);
+    }
+    free(agrupamentos);
 }
