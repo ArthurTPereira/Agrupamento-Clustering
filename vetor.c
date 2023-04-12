@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "vetor.h"
+#include "euclidian_distance.h"
 
 #define ERROR -1
 
@@ -162,7 +163,54 @@ char** alocaVetorNomes(int n) {
     return nomes;
 }
 
+void preencheVetorDistancias(int nPontos, int m, Ponto** distancias, char** pontos, char** nomesPontos) {
+    double vet1[m];
+    double vet2[m];
+    int v = 0;
+    char* pt;
+    int cont = 0;
+    char temp[1000];
 
+    for (int i = 0; i < nPontos; i++) {
+        // coleta o nome do ponto e insere no vetor de nomes
+        strcpy(temp, pontos[i]);
+        pt = strtok(temp,",");
+        nomesPontos[i] = (char*) malloc((strlen(pt)+1) * sizeof(char));
+        if (nomesPontos[i] == NULL) {
+            printf("Erro ao alocar memoria para o nome!\n");
+            exit(ERROR);
+        }
+        strcpy(nomesPontos[i], pt);
+        pt = strtok(NULL,",");
+
+        // coleta as coordenadas do ponto e insere em um vetor
+        while (pt) {
+            vet1[cont] = strtold(pt, NULL);
+            cont++;
+            pt = strtok(NULL,",");
+        }
+        cont = 0;
+
+        // para cada ponto seguinte, calcula a distancia euclidiana e insere no vetor de distancias
+        for (int j = i+1; j < nPontos; j++) {
+            strcpy(temp, pontos[j]);
+            pt = strtok(temp,",");
+            pt = strtok(NULL,","); // ignora o nome do ponto
+
+            // coleta as coordenadas do ponto e insere em outro vetor
+            while (pt) {
+                vet2[cont] = strtod(pt, NULL);
+                cont++;
+                pt = strtok(NULL,",");
+            }
+            cont = 0;
+
+            // utiliza os vetores com as coordenadas para calcular a distancia euclidiana e insere no vetor de distancias
+            atribuiDistancia(distancias,v,i,j,euclidian_distance(vet1, vet2, m));
+            v++;
+        }
+    }
+}
 
 // Libera a memoria alocada para o vetor de nomes
 // Entrada: nomes - vetor de nomes

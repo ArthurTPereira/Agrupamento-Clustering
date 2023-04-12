@@ -6,11 +6,9 @@
 
 #define ERROR -1
 
-
 // Estrutura de um dicionario para facilitar a escrita dos dados no arquivo de saida
 typedef struct dicionario {
     char* nome;
-    int indice;
     int freq;
 } Dicionario;
 
@@ -109,7 +107,6 @@ int comparaGrupos(const void* a, const void* b) {
 //          k - numero de grupos
 //          nomes - vetor com os nomes dos grupos
 void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nomes) {
-    
     // Vetor de grupos que armazena quais grupos distintos
     int* grupos = (int*) malloc(k * sizeof(int));
     if (grupos == NULL) {
@@ -126,7 +123,6 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
 
     int qtdDistintos = 0;
 
-    printf("Iniciando preenchimento do vetor de grupos e frequencia\n");
     // Preenche os vetores de grupos e frequencia
     for (int i = 0; i < tamanho; i++) {
         int temp = mst[i];
@@ -147,52 +143,37 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
             qtdDistintos++;
         }
     }
-    printf("Finalizando preenchimento vetor de grupos e frequencia\n");
 
-    for (int i = 0; i < k; i++) {
-        printf("Freq: %d\n", freq[i]);
-    }
-    
-    printf("Iniciando alocacao dicionario\n");
-    printf("K: %i\n",k);
     // Matriz com um "dicionario" para relacionar o id do nome com o indice
     Dicionario** agrupamentos = (Dicionario**) malloc(k * sizeof(Dicionario*));
     if (agrupamentos == NULL) {
         printf("Erro ao alocar memoria!\n");
         exit(ERROR);
     }
-    printf("Alocou agrupamentos\n");
     for (int i = 0; i < k; i++) {
         agrupamentos[i] = (Dicionario*) malloc(freq[i] * sizeof(Dicionario));
-        printf("Malloc de n: %i\n",freq[i]);
         if (agrupamentos[i] == NULL) {
             printf("Erro ao alocar memoria!\n");
             exit(ERROR);
-        }	
+        }
     }
-    printf("Finalizando alocacao dicionario");
 
     int count = 0;
+    // preenche a matriz com os ids e o indice, varrendo cada grupo
+    for (int i = 0; i < k; i++) {
+        count = 0;
 
-        printf("Iniciando preenchimento matriz agrupamentos\n");
-        // preenche a matriz com os ids e o indice, varrendo cada grupo
-        for (int i = 0; i < k; i++) {
-            count = 0;
-
-            // Varre a mst
-            for (int j = 0; j < tamanho; j++) {
-                // Se o valor na mst atual for igual ao grupo atual, adiciona o nome e o indice
-                if (mst[j] == grupos[i]) {
-                    agrupamentos[i][count].indice = j;
-                    agrupamentos[i][count].nome = nomes[j];
-                    agrupamentos[i][count].freq = freq[i];
-                    count++;
-                }
+        // Varre a mst
+        for (int j = 0; j < tamanho; j++) {
+            // Se o valor na mst atual for igual ao grupo atual, adiciona o nome e o indice
+            if (mst[j] == grupos[i]) {
+                agrupamentos[i][count].nome = nomes[j];
+                agrupamentos[i][count].freq = freq[i];
+                count++;
             }
         }
-    printf("Finalizando preenchimento matriz agrupamentos\n");
+    }
 
-    printf("Iniciando ordenacao\n");
     // Ordena cada grupo alfabeticamente
     for (int i = 0; i < k; i++) {
         qsort(agrupamentos[i], freq[i], sizeof(Dicionario), comparaNomes);
@@ -200,12 +181,8 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
 
     // Ordena o vetor dos grupos
     qsort(agrupamentos, k, sizeof(Dicionario*),comparaGrupos);
-    
-    printf("Finalizando ordenacao\n");
 
     int teste = 0;
-
-    printf("Iniciando escrita\n");
     // Escreve os grupos no arquivo de saida
     for (int i = 0; i < k; i++) {
         for (int j = 0; j < agrupamentos[i][0].freq; j++) {
@@ -218,8 +195,6 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
         fprintf(arquivoSaida,"\n");
 
     }
-
-    printf("Finalizando escrita\n");
 
     // libera o vetor de frequencia, os grupos e a matriz de agrupamentos
     free(freq);

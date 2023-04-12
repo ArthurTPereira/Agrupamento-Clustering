@@ -55,57 +55,11 @@ int main(int argc, char* argv[]) {
     // vetor de distancia
     Ponto** distancias = alocaVetorDistancia(tamanho);
     
-    double vet1[m];
-    double vet2[m];
-
     // Vetor com os nomes dos pontos
     char** nomesPontos = alocaVetorNomes(nPontos);
 
-    int v = 0;
-    char* pt;
-    int cont = 0;
-    char temp[1000];
-
     // preenche o vetor de distancias
-    for (int i = 0; i < nPontos; i++) {
-        // coleta o nome do ponto e insere no vetor de nomes
-        strcpy(temp, pontos[i]);
-        pt = strtok(temp,",");
-        nomesPontos[i] = (char*) malloc((strlen(pt)+1) * sizeof(char));
-        if (nomesPontos[i] == NULL) {
-            printf("Erro ao alocar memoria para o nome!\n");
-            return ERROR;
-        }
-        strcpy(nomesPontos[i], pt);
-        pt = strtok(NULL,",");
-
-        // coleta as coordenadas do ponto e insere em um vetor
-        while (pt) {
-            vet1[cont] = strtold(pt, NULL);
-            cont++;
-            pt = strtok(NULL,",");
-        }
-        cont = 0;
-
-        // para cada ponto seguinte, calcula a distancia euclidiana e insere no vetor de distancias
-        for (int j = i+1; j < nPontos; j++) {
-            strcpy(temp, pontos[j]);
-            pt = strtok(temp,",");
-            pt = strtok(NULL,","); // ignora o nome do ponto
-
-            // coleta as coordenadas do ponto e insere em outro vetor
-            while (pt) {
-                vet2[cont] = strtod(pt, NULL);
-                cont++;
-                pt = strtok(NULL,",");
-            }
-            cont = 0;
-
-            // utiliza os vetores com as coordenadas para calcular a distancia euclidiana e insere no vetor de distancias
-            atribuiDistancia(distancias,v,i,j,euclidian_distance(vet1, vet2, m));
-            v++;
-        }
-    }
+    preencheVetorDistancias(nPontos,m,distancias,pontos,nomesPontos);
 
     // libera o vetor de pontos inicial que nao sera mais utilizado
     liberaVetorPontos(pontos, nPontos);
@@ -122,10 +76,8 @@ int main(int argc, char* argv[]) {
     // libera o vetor de distancias que nao sera mais utilizado
     liberaVetorDistancia(distancias, tamanho);
 
-    printf("Iniciando escreveGrupos\n");
     // Escreve os grupos no arquivo de saida
     escreveGrupos(arquivoSaida, vetorArvore, nPontos, k, nomesPontos);
-    printf("Finalizando escreveGrupos\n");
 
     // Libera os vetores alocados
     fclose(arquivoSaida);

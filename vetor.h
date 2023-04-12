@@ -19,6 +19,8 @@ void atribuiDistancia(Ponto** vetorDistancias, int posicao, int origem, int colu
 
 char** alocaVetorNomes(int n);
 
+void preencheVetorDistancias(int nPontos, int m, Ponto** distancias, char** pontos, char** nomesPontos);
+
 void liberaVetorNomes(char** nomes, int n);
 
 double getDistancia(Ponto* ponto);
