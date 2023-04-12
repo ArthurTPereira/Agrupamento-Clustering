@@ -122,8 +122,10 @@ int main(int argc, char* argv[]) {
     // libera o vetor de distancias que nao sera mais utilizado
     liberaVetorDistancia(distancias, tamanho);
 
+    printf("Iniciando escreveGrupos\n");
     // Escreve os grupos no arquivo de saida
     escreveGrupos(arquivoSaida, vetorArvore, nPontos, k, nomesPontos);
+    printf("Finalizando escreveGrupos\n");
 
     // Libera os vetores alocados
     fclose(arquivoSaida);
