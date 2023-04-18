@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "file.h"
+#include "kruskal.h"
 
 #define ERROR -1
 
@@ -123,22 +124,18 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
 
     int qtdDistintos = 0;
 
-    // Preenche os vetores de grupos e frequencia
+    int found = 0;
     for (int i = 0; i < tamanho; i++) {
-        int temp = mst[i];
-        int found = 0;
-        // varre cada um dos grupos no vetor
+        found = 0;
         for (int j = 0; j < qtdDistintos; j++) {
-            // se encontrar aumenta a frequencia e sai do for
-            if (temp == grupos[j]) {
+            if (find(mst, mst[i]) == grupos[j]) {
                 found = 1;
                 freq[j]++;
                 break;
             }
         }
-        // se ja nao estiver no vetor de grupos, adiciona ele
         if (!found) {
-            grupos[qtdDistintos] = temp;
+            grupos[qtdDistintos] = find(mst, mst[i]);
             freq[qtdDistintos] = 1;
             qtdDistintos++;
         }
@@ -162,11 +159,9 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
     // preenche a matriz com os ids e o indice, varrendo cada grupo
     for (int i = 0; i < k; i++) {
         count = 0;
-
         // Varre a mst
         for (int j = 0; j < tamanho; j++) {
-            // Se o valor na mst atual for igual ao grupo atual, adiciona o nome e o indice
-            if (mst[j] == grupos[i]) {
+            if (find(mst,mst[j]) == grupos[i]) {
                 agrupamentos[i][count].nome = nomes[j];
                 agrupamentos[i][count].freq = freq[i];
                 count++;
@@ -196,7 +191,7 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
 
     }
 
-    // libera o vetor de frequencia, os grupos e a matriz de agrupamentos
+    // // libera o vetor de frequencia, os grupos e a matriz de agrupamentos
     free(freq);
     free(grupos);
     for (int i = 0; i < k; i++) {

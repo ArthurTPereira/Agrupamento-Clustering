@@ -14,13 +14,12 @@ int* kruskalAlgorithm(Ponto** arestas, int tamanhoVetor, int k, int nPontos) {
 
     // vetor que representa a arvore geradora minima
     int* vetor = (int*) malloc(nPontos * sizeof(int));
-    for (int i = 0; i < nPontos; i++) { // make set
-        vetor[i] = i;
-    }
 
     // vetor que armazena o tamanho de cada grupo, para o weighted quick union
     int* vetorSize = (int*) malloc(nPontos * sizeof(int));
+    
     for (int i = 0; i < nPontos; i++) { // make set
+        vetor[i] = i;
         vetorSize[i] = 1;
     }
 
@@ -32,7 +31,7 @@ int* kruskalAlgorithm(Ponto** arestas, int tamanhoVetor, int k, int nPontos) {
     for (int i = 0; i < tamanhoVetor; i++) {
 
         // se o numero de arestas for igual ao numero de grupos - 1, para o algoritmo
-        if (count == nPontos - 1 - (k -1)) {
+        if (count == nPontos - 1 - (k - 1)) {
             break;
         }
 

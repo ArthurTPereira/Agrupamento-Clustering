@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "euclidian_distance.h"
 #include "vetor.h"
@@ -63,18 +64,18 @@ int main(int argc, char* argv[]) {
 
     // libera o vetor de pontos inicial que nao sera mais utilizado
     liberaVetorPontos(pontos, nPontos);
-
+    
     // ordena o vetor de distancia
     qsort(distancias, tamanho, sizeof(Ponto*), comparaDistancia);
-
-    // Abre o arquivo de saida
-    FILE* arquivoSaida = abreArquivoSaida(nomeArquivoSaida);
 
     // executa o algoritmo de kruskal e obtem a mst
     int* vetorArvore = kruskalAlgorithm(distancias,tamanho, k, nPontos);
 
     // libera o vetor de distancias que nao sera mais utilizado
     liberaVetorDistancia(distancias, tamanho);
+
+    // Abre o arquivo de saida
+    FILE* arquivoSaida = abreArquivoSaida(nomeArquivoSaida);
 
     // Escreve os grupos no arquivo de saida
     escreveGrupos(arquivoSaida, vetorArvore, nPontos, k, nomesPontos);
