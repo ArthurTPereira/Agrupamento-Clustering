@@ -108,6 +108,7 @@ int comparaGrupos(const void* a, const void* b) {
 //          k - numero de grupos
 //          nomes - vetor com os nomes dos grupos
 void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nomes) {
+
     // Vetor de grupos que armazena quais grupos distintos
     int* grupos = (int*) malloc(k * sizeof(int));
     if (grupos == NULL) {
@@ -124,9 +125,12 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
 
     int qtdDistintos = 0;
 
+    // Preenche o vetor com os grupos e a frequencia de cada um
     int found = 0;
     for (int i = 0; i < tamanho; i++) {
         found = 0;
+
+        // Verifica se esta no vetor de grupos
         for (int j = 0; j < qtdDistintos; j++) {
             if (find(mst, mst[i]) == grupos[j]) {
                 found = 1;
@@ -134,6 +138,8 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
                 break;
             }
         }
+
+        // Se nao estiver no vetor, adiciona
         if (!found) {
             grupos[qtdDistintos] = find(mst, mst[i]);
             freq[qtdDistintos] = 1;
@@ -148,6 +154,7 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
         exit(ERROR);
     }
     for (int i = 0; i < k; i++) {
+        // Aloca cada linha da matriz com o tamanho de cada grupo
         agrupamentos[i] = (Dicionario*) malloc(freq[i] * sizeof(Dicionario));
         if (agrupamentos[i] == NULL) {
             printf("Erro ao alocar memoria!\n");
@@ -163,6 +170,7 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
         for (int j = 0; j < tamanho; j++) {
             if (find(mst,mst[j]) == grupos[i]) {
                 agrupamentos[i][count].nome = nomes[j];
+                // A frequencia eh importante para saber quantas colunas cada grupo tem na hora de escrever no arquivo
                 agrupamentos[i][count].freq = freq[i];
                 count++;
             }
@@ -180,10 +188,11 @@ void escreveGrupos(FILE* arquivoSaida, int* mst, int tamanho, int k, char** nome
     int teste = 0;
     // Escreve os grupos no arquivo de saida
     for (int i = 0; i < k; i++) {
+        // Escreve cada item do grupo atual
         for (int j = 0; j < agrupamentos[i][0].freq; j++) {
             fprintf(arquivoSaida, "%s", agrupamentos[i][j].nome);
                 
-            if (j != agrupamentos[i][0].freq - 1) { // atencao para nao colocar virgula no final
+            if (j != agrupamentos[i][0].freq - 1) { // Verificacao para nao escrever virgula no final
                 fprintf(arquivoSaida,",");
             }
         }

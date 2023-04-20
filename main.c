@@ -1,13 +1,12 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include "euclidian_distance.h"
 #include "vetor.h"
 #include "kruskal.h"
 #include "file.h"
 
+// Codigos de retorno
 #define SUCCESS 0
 #define ERROR -1
 
@@ -41,8 +40,8 @@ int main(int argc, char* argv[]) {
     // Volta o arquivo de entrada para o começo
     rewind(arquivoEntrada);
 
-    int v_max = 1; // tamanho maximo do vetor das linhas do arquivo de entrada
-    int nPontos = 0; // Numero de pontos atual
+    int v_max = 1; // tamanho maximo do vetor das linhas do arquivo de entrada (incrementado durante a leitura)
+    int nPontos = 0; // Numero de pontos do arquivo de entrada (incrementado durante a leitura)
 
     // Coleta as linhas do arquivo de entrada e preenche em um vetor de strings
     char** pontos = preencheVetorLinhas(buffer, &bufferSize, arquivoEntrada, &nPontos, &v_max);

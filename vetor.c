@@ -39,7 +39,7 @@ void liberaVetorPontos(char** pontos, int nPontos) {
 char** preencheVetorLinhas(char* buffer, size_t* bufferSize, FILE* arquivoEntrada, int* nPontos, int* v_max) {
     
     // declara o vetor de pontos
-    char** pontos = (char**) malloc(sizeof(char*));
+    char** pontos = (char**) malloc(*v_max * sizeof(char*));
     char* temp;
 
     // le o arquivo linha por linha
