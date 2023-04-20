@@ -1,8 +1,8 @@
 # Primeiro Trabalho de TBO
-Programa que resolve o problema de agrupamentos de diversos pontos em um espaço $$R^m$$, em que *m* é o número de dimensões do espaço.
+Programa que resolve o problema de agrupamentos de diversos pontos em um espaço $R^m$, em que *m* é o número de dimensões do espaço.
 
 # Arquivos de entrada
-Os arquivos de entrada devem ser em formato *.txt*. Cada linha do arquivo representará um ponto do $$R^m$$ e deve ser composta por *m* + 1 campos separados por vírgulas. O primeiro elemento será um identificador único do ponto (cadeia de caracteres) e os demais *m* valores reais devem indicar a coordenada do ponto no $$R^m$$. Segue exemplo abaixo:
+Os arquivos de entrada devem ser em formato *.txt*. Cada linha do arquivo representará um ponto do $R^m$ e deve ser composta por *m* + 1 campos separados por vírgulas. O primeiro elemento será um identificador único do ponto (cadeia de caracteres) e os demais *m* valores reais devem indicar a coordenada do ponto no $R^m$. Segue exemplo abaixo:
 ```
 A,3.0,7.0
 B,1.0,2.0
